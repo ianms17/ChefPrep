@@ -1,0 +1,150 @@
+{% extends "base.html" %} {% load static %}
+
+{% block page_content %}
+
+<link rel="stylesheet" href="{% static 'search.css' %}">
+
+<div class="title">
+    <h1>Search page</h1>
+</div>
+
+<!-- Tabbed panes -->
+
+<ul class="nav nav-tabs scale bg-dark" style="display: flex; justify-content: space-around; border-radius: 50px;">
+    <li class="nav-item" style="margin: 15px">
+        <a data-toggle="tab" style = "color:white;" href="#query" {% if display == 'Query' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Query</a>
+    </li>
+    <li class="nav-item" style="margin: 15px">
+        <a data-toggle="tab" style = "color:white;" href="#ingredients" {% if display == 'Ingredients' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Ingredients</a>
+    </li>
+    <li class="nav-item" style="margin: 15px">
+        <a data-toggle="tab" style = "color:white;" href="#nutrients" {% if display == 'Nutrients' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Nutrients</a>
+    </li>
+    <li class="nav-item" style="margin: 15px">
+        <a data-toggle="tab" style = "color:white;" href="#complex" {% if display == 'Complex' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>Complex</a>
+    </li>
+</ul>
+
+<!-- Content in tabs -->
+<div class="tab-content tab-content-adjust">
+    <div id="query" {% if display == 'Query' %} class="tab-pane active" {% else %} class="tab-pane" {% endif %}>
+        <div>
+            <h2>Searching by keyword</h2>
+            <p>Enter a dish of what you would like to eat, like "coffee and croissant" or "chicken enchilada".
+                We have hundreds of thousands of recipes, including international dishes.</p>
+        </div>
+        <form action="" method="post" id="query_form">
+            {% csrf_token %} {{ query_Form }}
+            <input type="submit" value="Submit" class="btn" name="Query"/>
+        </form>
+    </div>
+
+    <div id="ingredients" {% if display == 'Ingredients' %} class="tab-pane active" {% else %} class="tab-pane" {% endif %}>
+        <div>
+            <h2>Searching by ingredients</h2>
+            <p>Enter a list of ingredients that you would like your recipes to have, like "apple, cinnamon, sugar".
+                We will try to provide recipes that includes as many of the provided ingredients as possible .</p>
+        </div>
+        <form action="" method="post">
+            {% csrf_token %} {{ ingredients_Form }}
+            <input type="submit" value="Submit" class="btn" name="Ingredients"/>
+        </form>
+    </div>
+
+    <div id="nutrients" {% if display == 'Nutrients' %} class="tab-pane active" {% else %} class="tab-pane" {% endif %}>
+        <div>
+            <h2>Searching by nutrients</h2>
+            <p>Enter the ranges of nutrients you want your meals to contain.
+                We will provide recipes that fit your nutrional needs.</p>
+        </div>
+        <form action="" method="post">
+            <div class="nutrients_container">
+                {% csrf_token %} {{ nutrients_Form }}
+            </div>
+            <input type="submit" value="Submit" class="btn" name="Nutrients"/>
+        </form>
+    </div>
+
+    <div id="complex" {% if display == 'Complex' %} class="tab-pane active" {% else %} class="tab-pane" {% endif %}>
+        <form action="" method="post">
+            <div class="complex_container">
+                {% csrf_token %} {{ complex_Form }}
+            </div>
+            <input type="submit" value="Submit" class="btn" name="Complex"/>
+        </form>
+    </div>
+</div>
+
+{% for result in results_basic %}
+<div class = "items scale">
+  <img
+    src={{ result.image }}
+    style="float: right; height: 150px; width: auto; padding-left: 20px"
+  />
+  <h2>{{ result.title }}</h2>
+  <p>
+    ID: {{ result.id }} <br />
+    Ready in: {{ result.readyInMinutes }} minutes<br />
+    Servings: {{ result.servings }} <br />
+    Source: {{ result.sourceUrl }} <br />
+  </p>
+</div>
+{% endfor %}
+
+{% for result in results_ingredients %}
+<div class = "scale">
+  <img
+    src={{ result.image }}
+    style="float: right; height: 150px; width: auto; padding-left: 20px"
+  />
+  <h2>{{ result.title }}</h2>
+  <p>
+    ID: {{ result.id }} <br />
+    Number of used ingredients: {{ result.usedIngredientCount }} <br />
+    Number of missed ingredients: {{ result.missedIngredientCount }} <br />
+    Likes: {{ result.likes }} <br />
+  </p>
+</div>
+{% endfor %}
+
+{% for result in results_nutrients %}
+<div class = "scale">
+  <img
+    src={{ result.image }}
+    style="float: right; height: 150px; width: auto; padding-left: 20px"
+  />
+  <h2>{{ result.title }}</h2>
+  <p>
+    ID: {{ result.id }} <br />
+    Calories: {{ result.calories }} <br />
+    Protein: {{ result.protein }} <br />
+    Carbs: {{ result.carbs }} <br />
+    Fat: {{ result.fat }} <br />
+  </p>
+</div>
+{% endfor %}
+
+<!-- displaying results -->
+{% for result in results %}
+<div class="searchResult">
+    <div>
+        <a href="/recipe/{{ result.id }}/"><h3>{{ result.title }}</h3></a>
+        <p>
+        {% if result.readyInMinutes %}Ready in: {{ result.readyInMinutes }} minutes<br />{% endif %}
+        {% if result.servings %}Servings: {{ result.servings }} <br />{% endif %}
+        {% if result.sourceUrl %}Source: {{ result.sourceUrl }} <br />{% endif %}
+        {% if result.usedIngredientCount %}Number of used ingredients: {{ result.usedIngredientCount }} <br />{% endif %}
+        {% if result.missedIngredientCount %}Number of missed ingredients: {{ result.missedIngredientCount }} <br />{% endif %}
+        {% if result.likes %}Likes: {{ result.likes }} <br />{% endif %}
+        {% if result.calories %}Calories: {{ result.calories }} <br />{% endif %}
+        {% if result.protein %}Protein: {{ result.protein }} <br />{% endif %}
+        {% if result.carbs %}Carbs: {{ result.carbs }} <br />{% endif %}
+        {% if result.fat %}Fat: {{ result.fat }} <br />{% endif %}
+        </p>
+    </div>
+    <img src="{{ result.image }}"/>
+</div>
+{% endfor %}
+</body>
+
+{% endblock %}

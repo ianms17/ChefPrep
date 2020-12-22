@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% load static %}
+
+{% block page_content %}
+
+<link rel="stylesheet" href="{% static 'calendar.css' %}">
+
+<h1>Calendar page</h1><br>
+<div class="button-container">
+	<a class="btn btn-info" href="/search/"> Find recipe to add to Calendar</a>
+	<form action='' method='POST'>
+		{% csrf_token %} {{ clear_form }}
+		<input class="btn btn-info" type="submit" name="Clear Date"> 
+    </form>
+	<div>
+		<a class="btn btn-info" href="/user/calendar?{{ prev_month }}"> Previous Month </a>
+		<a class="btn btn-info" href="/user/calendar?{{ next_month }}"> Next Month </a>
+	</div>
+</div>
+<div>
+    {{ google_calendar | safe }}
+</div>
+{% endblock %}

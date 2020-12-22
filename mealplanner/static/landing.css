@@ -1,0 +1,17 @@
+
+h1{
+    font-size: 100px;
+    color:white;
+    background-color: #89CFF0;
+    animation: 1s ease-out 0s 1 FadeIn;
+    font-family:sans-serif;
+    font-weight: bolder;
+}
+.dot {
+    width: 33%;
+    height: 0;
+    background-color:  #89CFF0;
+    border-radius: 50%;
+    animation: 1s ease-out 0s 1 FadeIn;
+    opacity:.7;
+}

@@ -1,0 +1,106 @@
+{% extends "base.html" %} {% load static %}
+
+{% block page_content %}
+
+<link rel="stylesheet" href="{% static 'recipe.css' %}">
+
+<div class="title">
+    <h1>{{ results.title}}</h1>
+    <div class="btn-container">
+        <form action='/user/calendar/' method='POST'>
+            <div class="btn-container">
+                {% csrf_token %} {{ form }}
+                <input class="btn" type="submit" name="Add to Calendar" value="Add to Calendar"> 
+                <input type="hidden" name="recipe_id" value="{{ results.id }}">
+                <input type="hidden" name="recipe_name" value="{{ results.title }}">
+            </div>
+        </form>
+        <div class="btn-container">
+            <form action='#' method='POST'>
+            {% csrf_token %}        
+            <input class="btn" type="submit" name="Sendmsg" value="Sendmsg">
+            </form>
+            <form action='' method='POST'>
+                {% csrf_token %}    
+                <input class="btn" type="submit" name="Favorite" value="Favorite"> 
+                <input type="hidden" name="recipe_id" value="{{ results.id }}">
+                <input type="hidden" name="recipe_name" value="{{ results.title }}">
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <img class="picture" src="{{ results.image }}">
+    </div>
+    <div class="text col-md-3">
+        <h5>Vegetarian: {{ results.vegetarian }}</h5>
+        <h5>Vegan: {{ results.vegan }}</h5>
+        <h5>Gluten Free: {{ results.glutenFree }}</h5>
+        <h5>Dairy Free: {{ results.dairyFree }}</h5>
+        <h5>Cheap: {{ results.cheap }}</h5>
+        <h5>Popular: {{ results.veryPopular }}</h5>
+        <h5>Sustainable: {{ results.sustainable }}</h5>
+        <h5></h5>
+        <h5></h5>
+        <h5></h5>
+        <h5>Ready In: {{ results.readyInMinutes }} minutes</h5>
+        <h5>Prep Time: {{ results.preparationMinutes }} minutes</h5>
+        <h5>Cooking Time: {{ results.cookingMinutes }} minutes</h5>
+        <h5></h5>
+        <h5></h5>
+        <h5></h5>
+        <h5>Servings: {{ results.servings }}</h5>
+        <h5>Total Cost: ${{ results.pricePerServing }}</h5>
+        <h5>Health Score: {{ results.healthScore }}/100</h5>
+    </div>
+</div>
+
+<div class="summary">
+    {{ results.summary | safe }}
+</div>
+
+<div class="ingredients">
+    <h2>Ingredients</h2>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {% for ingredient in results.extendedIngredients %}
+            <p>{{ ingredient.amount }} {{ ingredient.unit }} of {{ ingredient.name }} found in the {{ ingredient.aisle }} aisle</p>
+        {% endfor %}
+    </div>
+    <div class="col-md-6">
+        <canvas id="ingredients_Chart"></canvas>
+    </div>
+</div>
+
+<div class="nutrients">
+    <h2>Nutrients</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {% for nutrient in results.nutrition.nutrients %}
+            <p>{{ nutrient.title }}: {{ nutrient.amount }} {{ nutrient.unit }}, {{ nutrient.percentOfDailyNeeds }}% of daily needs</p>
+        {% endfor %}
+    </div>
+    <div class="col-md-6">
+        <canvas id="nutrients_Chart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<script>
+    var ic_data = {{ ingredients_Chart_get | safe }}
+    var ic_ctx = document.getElementById("ingredients_Chart").getContext('2d');
+    var ingredientsChart = new Chart(ic_ctx, ic_data);
+</script>
+<script>
+    var nc_data = {{ nutrients_Chart_get | safe }}
+    var nc_ctx = document.getElementById("nutrients_Chart").getContext('2d');
+    var nutrientsChart = new Chart(nc_ctx, nc_data);
+</script>
+
+{% endblock %}
+
